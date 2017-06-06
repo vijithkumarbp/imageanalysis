@@ -48,6 +48,7 @@
                 var faceAttributes = firstFace.faceAttributes;
                 var overlayID = "Rectangle"+i;
                 var img = $('<img />',{ id: ''+overlayID, src: 'Rectangle.png'}).appendTo($('#PhotoDiv'));    
+                $(overlayID).css("Rectangle");
                 $(overlayID).css("top", faceTop);
                 $(overlayID).css("left", faceLeft);
                 $(overlayID).css("height", faceHeight);
