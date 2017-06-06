@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>S&AP Digital Skills Challenge</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/site.css">
+</head>
+<body>
+
+<script type="text/javascript">
+    $(function() {
+        var params = {
+            // Request parameters
+            "returnFaceId": "true",
+            "returnFaceLandmarks": "false",
+            "returnFaceAttributes": "age,gender",
+        };
+        var outputDiv = $("#OutputDiv");
+        outputDiv.text("Thinking...");
+        $.ajax({
+            // NOTE: You must use the same location in your REST call as you used to obtain your subscription keys.
+            //   For example, if you obtained your subscription keys from westus, replace "westcentralus" in the 
+            //   URL below with "westus".
+            url: "https://westeurope.api.cognitive.microsoft.com/face/v1.0/detect?" + $.param(params),
+            beforeSend: function(xhrObj){
+                // Request headers
+                xhrObj.setRequestHeader("Content-Type","application/json");
+
+                // NOTE: Replace the "Ocp-Apim-Subscription-Key" value with a valid subscription key.
+                xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key","372f127a8fe142df93c4ddc5d2efe22b");
+            },
+            type: "POST",
+            // Request body
+            data: '{"url": "https://cdn.aohostels.com/img/categories/Teaser_Gruppen.jpg"}',
+        })
+        .done(function(data) {
+            var i=data.length;
+            var outputText = "";    
+            for(i=0;i<data.length;i++) {
+                var firstFace = data[i];
+                var faceId = firstFace.faceId;
+                var faceRectange = firstFace.faceRectangle;
+                var faceWidth = faceRectange.width;
+                var faceHeight = faceRectange.height;
+                var faceLeft = faceRectange.left;
+                var faceTop = faceRectange.top;
+                var faceAttributes = firstFace.faceAttributes;
+                var overlayID = "Rectangle"+i;
+                $('#main').append('<img src="Rectangle.png" id="'+overlayID+'">');
+                $(overlayID).css("top", faceTop);
+                $(overlayID).css("left", faceLeft);
+                $(overlayID).css("height", faceHeight);
+                $(overlayID).css("width", faceHeight);
+                $(overlayID).css("display", "block");
+                outputText += "Face ID: " + faceId + "<br>";
+                outputText += "Top: " + faceTop + "<br>";
+                outputText += "Left: " + faceLeft + "<br>";
+                outputText += "Width: " + faceWidth + "<br>";
+                outputText += "Height: " + faceHeight + "<br>";
+                outputText += "Attributes:" + "<br>";
+                outputText += "age: " + faceAttributes.age + "<br>";
+                outputText += "gender: " + faceAttributes.gender + "<br>";
+                outputText += "smile: " + (faceAttributes.smile || "n/a") + "<br>";
+                outputText += "glasses: " + faceAttributes.glasses + "<br>";
+            }
+                outputDiv.html(outputText);
+        })
+        .fail(function() {
+            alert("error");
+        });
+    });
+</script>
+    <div class="jumbotron">
+        <h1>Microsoft Cognitive Services</h1>
+        <h2>Face Recognition Demo for S&AP Summit</h2>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+             <div id="OutputDiv">Output</div>
+       </div>
+        <div class="col-md-2">
+            <div id="PhotoDiv">
+                <img id="ImageToAnalyze" src="https://cdn.aohostels.com/img/categories/Teaser_Gruppen.jpg">
+                <div class="FaceLabel" id="LeftEyeDiv">LEFT</div>
+                <div class="FaceLabel" id="RightEyeDiv">RIGHT</div>
+                <div class="FaceLabel" id="NoseDiv">NOSE</div>
+                <div class="FaceLabel" id="MouthDiv">MOUTH</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
